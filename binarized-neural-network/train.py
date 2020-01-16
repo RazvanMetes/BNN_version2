@@ -13,7 +13,7 @@ import optimizers
 
 
 parser = argparse.ArgumentParser(description='Training module for binarized nets')
-parser.add_argument('--network', type=str, default='standard', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
+parser.add_argument('--network', type=str, default='binary_sbn', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
 parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist','cifar10'], help='Dataset to be used for the learning task')
 parser.add_argument('--modeldir', type=str, default='./models/', help='path where to save network\'s weights')
 parser.add_argument('--logdir', type=str, default='./logs/', help='folder for tensorboard logs')
