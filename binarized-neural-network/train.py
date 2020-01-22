@@ -11,9 +11,9 @@ from utils.progressbar import ProgressBar
 import optimizers
 
 
-
+# Set up the list of parameters
 parser = argparse.ArgumentParser(description='Training module for binarized nets')
-parser.add_argument('--network', type=str, default='binary_sbn', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
+parser.add_argument('--network', type=str, default='binary', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
 parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist','cifar10'], help='Dataset to be used for the learning task')
 parser.add_argument('--modeldir', type=str, default='./models/', help='path where to save network\'s weights')
 parser.add_argument('--logdir', type=str, default='./logs/', help='folder for tensorboard logs')
@@ -35,12 +35,14 @@ SHIFT_OPT = args.shift_optimizer
 
 timestamp = int(time.time())
 
+# Set the current paths
 model_name = ''.join([str(timestamp), '_', NETWORK, '_', DATASET])
 session_logdir = os.path.join(LOGDIR, model_name)
 train_logdir = os.path.join(session_logdir, 'train')
 test_logdir = os.path.join(session_logdir, 'test')
 session_modeldir = os.path.join(MODELDIR, model_name)
 
+# Create folder
 if not os.path.exists(session_modeldir):
 	os.makedirs(session_modeldir)
 if not os.path.exists(train_logdir):
@@ -53,9 +55,11 @@ if not os.path.exists(test_logdir):
 # dataset preparation using tensorflow dataset iterators
 x_train, y_train, x_test, y_test, num_classes = datasets.load_dataset(DATASET)
 
+# select batch size
 batch_size = tf.placeholder(tf.int64)
 data_features, data_labels = tf.placeholder(tf.float32, (None,)+x_train.shape[1:]), tf.placeholder(tf.int32, (None,)+y_train.shape[1:])
 
+# shuffle the data
 train_data = tf.data.Dataset.from_tensor_slices((data_features, data_labels))
 train_data = train_data.repeat().shuffle(x_train.shape[0]).batch(batch_size)
 
@@ -73,8 +77,10 @@ test_initialization = data_iterator.make_initializer(test_data)
 is_training = tf.get_variable('is_training', initializer=tf.constant(False, tf.bool))
 switch_training_inference = tf.assign(is_training, tf.logical_not(is_training))
 
+# select the model for your type of network and dataset
 xnet, ynet = networks.get_network(NETWORK, DATASET, features, training=is_training)
 
+# the optimization algorithm
 with tf.name_scope('trainer_optimizer'):
 	learning_rate = tf.Variable(STEPSIZE, name='learning_rate')
 	learning_rate_decay = tf.placeholder(tf.float32, shape=(), name='lr_decay')
@@ -91,7 +97,7 @@ with tf.name_scope('trainer_optimizer'):
 		train_op = optimizer.minimize(loss=loss, global_step=global_step)
 
 	
-# metrics definition
+# metrics definition - compute accuracy and loss
 with tf.variable_scope('metrics'):
 	mloss, mloss_update	  = tf.metrics.mean(cross_entropy)
 	accuracy, acc_update  = tf.metrics.accuracy(labels, tf.argmax(ynet, axis=1))
@@ -118,7 +124,7 @@ NUM_BATCHES_TEST = math.ceil(x_test.shape[0] / BATCH_SIZE)
 
 with tf.Session() as sess:
 
-	# tensorboard summary writer
+	# tensorboard summary writer - plot with accuracy and loss
 	train_writer = tf.summary.FileWriter(train_logdir, sess.graph)
 	test_writer = tf.summary.FileWriter(test_logdir)
 	
