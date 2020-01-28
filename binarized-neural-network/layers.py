@@ -19,18 +19,29 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 	
 	# count all the input units (thus check the shape without considering the batch size)
 	in_units = flat_input.get_shape().as_list()[1]
+	print(in_units)
 	
 	with tf.variable_scope(name, reuse=reuse):
 		# getting layer weights and add clip operation (between -1, 1)
+		# [in_units, units] - shape ex: (784, 2048)
 		w = tf.get_variable('weight', [in_units, units], initializer=tf.contrib.layers.xavier_initializer(), trainable=trainable)
+		print("w1",w)
+		# Given a tensor t, this operation returns a tensor of the same type and shape as t with its values clipped to clip_value_min and clip_value_max.
+		# Any values less than clip_value_min are set to clip_value_min. Any values greater than clip_value_max are set to clip_value_max.
 		w = tf.clip_by_value(w, -1, 1)
+
+		print("w2",w)
+
 
 		# binarize input and weights of the layer
 		if binarize_input:
 			flat_input = binarize(flat_input)
 		w = binarize(w)
+		print("w3",w)
+
 		
 		# adding layer operation -> (w*x + b)
+		# tf matmul -> multiply two matrices
 		out = tf.matmul(flat_input, w)
 		if use_bias:
 			b = tf.get_variable('bias', [units], initializer=tf.zeros_initializer(), trainable=trainable)
@@ -42,6 +53,7 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 		
 		# activations collection is not automatically populated
 		tf.add_to_collection(tf.GraphKeys.ACTIVATIONS, out)
+
 		return out
 
 

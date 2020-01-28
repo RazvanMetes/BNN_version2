@@ -73,12 +73,14 @@ train_initialization = data_iterator.make_initializer(train_data)
 test_initialization = data_iterator.make_initializer(test_data)
 
 
+
 # network initialization
 is_training = tf.get_variable('is_training', initializer=tf.constant(False, tf.bool))
 switch_training_inference = tf.assign(is_training, tf.logical_not(is_training))
 
 # select the model for your type of network and dataset
 xnet, ynet = networks.get_network(NETWORK, DATASET, features, training=is_training)
+
 
 # the optimization algorithm
 with tf.name_scope('trainer_optimizer'):
@@ -129,7 +131,8 @@ with tf.Session() as sess:
 	test_writer = tf.summary.FileWriter(test_logdir)
 	
 	sess.run(tf.global_variables_initializer())
-	
+
+
 	for epoch in range(EPOCHS):
 		
 		print("\nEPOCH %d/%d" % (epoch+1, EPOCHS))
@@ -153,14 +156,14 @@ with tf.Session() as sess:
 			trn_loss, a = sess.run(metrics)
 			
 			progress_info.update_and_show( suffix = '  loss {:.4f},  acc: {:.3f}'.format(trn_loss, a) )
-		print()
+
 		
 		summary = sess.run(merged_summary)
 		train_writer.add_summary(summary, epoch)
 		
 		
 		
-		# initialize the test dataset and set batc normalization inference
+		# initialize the test dataset and set batch normalization inference
 		sess.run(test_initialization, feed_dict={data_features:x_test, data_labels:y_test, batch_size:BATCH_SIZE})
 		sess.run(metrics_initializer)
 		sess.run(switch_training_inference)
@@ -183,5 +186,13 @@ with tf.Session() as sess:
 	test_writer.close()
 	
 	saver.save(sess, os.path.join(session_modeldir, 'model.ckpt'))
+
+	init_op = tf.initialize_all_variables()
+
+	# run the graph
+	with tf.Session() as sess:
+		sess.run(init_op)  # execute init_op
+		# print the random values that we sample
+		print(sess.run(xnet))
 
 print('\nTraining completed!\nNetwork model is saved in  {}\nTraining logs are saved in {}'.format(session_modeldir, session_logdir))

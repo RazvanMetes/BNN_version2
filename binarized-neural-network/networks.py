@@ -91,6 +91,7 @@ def binary_cifar10(input, training=True):
 
 def binary_cifar10_sbn(input, training=True):
 	out = layers.binaryConv2d(input, 128, [3,3], [1,1], padding='VALID', use_bias=False, binarize_input=False, name='bc_conv2d_1')
+	print("out",out)
 	out = layers.spatial_shift_batch_norm(out, training=training, name='shift_batch_norm_1')
 	out = tf.clip_by_value(out, -1, 1)
 	out = layers.binaryConv2d(out, 128, [3,3], [1,1], padding='SAME', use_bias=False, name='bnn_conv2d_1')
