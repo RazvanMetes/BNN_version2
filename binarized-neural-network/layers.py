@@ -11,10 +11,9 @@ def binarize(x):
 		return tf.sign(tf.sign(x)+1e-8) #	<-- this should be ok, ugly but okay
 
 
-# liniarization
-def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, binarize_input=True,
-				name='binarydense', reuse=False):
-	
+def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, binarize_input=True, name='binarydense', reuse=False):
+
+
 	# flatten the input 
 	flat_input = tf.contrib.layers.flatten(inputs)
 	
