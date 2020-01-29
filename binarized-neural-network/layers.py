@@ -11,19 +11,25 @@ def binarize(x):
 		return tf.sign(tf.sign(x)+1e-8) #	<-- this should be ok, ugly but okay
 
 
-	
-def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, binarize_input=True, name='binarydense', reuse=False):
+# liniarization
+def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, binarize_input=True,
+				name='binarydense', reuse=False):
 	
 	# flatten the input 
 	flat_input = tf.contrib.layers.flatten(inputs)
 	
 	# count all the input units (thus check the shape without considering the batch size)
 	in_units = flat_input.get_shape().as_list()[1]
-	print(in_units)
+	# units of the tensor?
+	print("in_units ", in_units)
+	print("units ", units)
 	
 	with tf.variable_scope(name, reuse=reuse):
 		# getting layer weights and add clip operation (between -1, 1)
 		# [in_units, units] - shape ex: (784, 2048)
+		# Weights are randomly generated using the Xavier Algo (see https://docs.w3cub.com/tensorflow~python/tf/contrib/layers/xavier_initializer/)
+		# Xaviers seems to return values between -1, 1; why clip_by_value? https://prateekvjoshi.com/2016/03/29/understanding-xavier-initialization-in-deep-neural-networks/
+
 		w = tf.get_variable('weight', [in_units, units], initializer=tf.contrib.layers.xavier_initializer(), trainable=trainable)
 		print("w1",w)
 		# Given a tensor t, this operation returns a tensor of the same type and shape as t with its values clipped to clip_value_min and clip_value_max.
@@ -31,7 +37,6 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 		w = tf.clip_by_value(w, -1, 1)
 
 		print("w2",w)
-
 
 		# binarize input and weights of the layer
 		if binarize_input:
