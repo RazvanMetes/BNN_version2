@@ -18,7 +18,7 @@ parser.add_argument('--network', type=str, default='binary', choices=['standard'
 parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist','cifar10'], help='Dataset to be used for the learning task')
 parser.add_argument('--modeldir', type=str, default='./models/', help='path where to save network\'s weights')
 parser.add_argument('--logdir', type=str, default='./logs/', help='folder for tensorboard logs')
-parser.add_argument('--epochs', type=int, default=10, help='Number of epochs performed during training')
+parser.add_argument('--epochs', type=int, default=5, help='Number of epochs performed during training')
 parser.add_argument('--batchsize', type=int, default=32, help='Dimension of the training batch')
 parser.add_argument('--stepsize', type=float, default=1e-3, help='Starting optimizer learning rate value')
 parser.add_argument('--shift_optimizer', default=False, action='store_true', help='Toggle th use of shift based AdaMax instead of vanilla Adam optimizer')
@@ -202,5 +202,5 @@ with tf.Session() as sess:
 	with tf.Session() as sess:
 		sess.run(init_op)  # execute init_op
 		# print the random values that we sample
-		print(sess.run(xnet))
+		#print(sess.run(xnet))
 print('\nTraining completed!\nNetwork model is saved in  {}\nTraining logs are saved in {}'.format(session_modeldir, session_logdir))

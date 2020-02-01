@@ -35,6 +35,7 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 		# Any values less than clip_value_min are set to clip_value_min. Any values greater than clip_value_max are set to clip_value_max.
 		w = tf.clip_by_value(w, -1, 1)
 
+
 		print("w2",w)
 
 		# binarize input and weights of the layer
@@ -43,7 +44,9 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 		w = binarize(w)
 		print("w3",w)
 
-		
+		z = tf.Variable(w, name="weight_binary")
+
+
 		# adding layer operation -> (w*x + b)
 		# tf matmul -> multiply two matrices
 		out = tf.matmul(flat_input, w)
