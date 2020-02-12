@@ -14,11 +14,11 @@ import optimizers
 
 # Set up the list of parameters
 parser = argparse.ArgumentParser(description='Training module for binarized nets')
-parser.add_argument('--network', type=str, default='binary', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
-parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist','cifar10'], help='Dataset to be used for the learning task')
+parser.add_argument('--network', type=str, default='binary_sbn', choices=['standard','binary','binary_sbn'], help='Type of network to be used')
+parser.add_argument('--dataset', type=str, default='cifar10', choices=['mnist','cifar10'], help='Dataset to be used for the learning task')
 parser.add_argument('--modeldir', type=str, default='./models/', help='path where to save network\'s weights')
 parser.add_argument('--logdir', type=str, default='./logs/', help='folder for tensorboard logs')
-parser.add_argument('--epochs', type=int, default=5, help='Number of epochs performed during training')
+parser.add_argument('--epochs', type=int, default=3, help='Number of epochs performed during training')
 parser.add_argument('--batchsize', type=int, default=32, help='Dimension of the training batch')
 parser.add_argument('--stepsize', type=float, default=1e-3, help='Starting optimizer learning rate value')
 parser.add_argument('--shift_optimizer', default=False, action='store_true', help='Toggle th use of shift based AdaMax instead of vanilla Adam optimizer')
@@ -34,6 +34,7 @@ STEPSIZE = args.stepsize
 SHIFT_OPT = args.shift_optimizer
 
 
+
 timestamp = int(time.time())
 
 # Set the current paths
@@ -42,6 +43,9 @@ session_logdir = os.path.join(LOGDIR, model_name)
 train_logdir = os.path.join(session_logdir, 'train')
 test_logdir = os.path.join(session_logdir, 'test')
 session_modeldir = os.path.join(MODELDIR, model_name)
+
+
+
 
 # Create folder
 if not os.path.exists(session_modeldir):

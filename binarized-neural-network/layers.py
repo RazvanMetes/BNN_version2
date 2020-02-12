@@ -45,6 +45,7 @@ def binaryDense(inputs, units, activation=None, use_bias=True, trainable=True, b
 		print("w3",w)
 
 		z = tf.Variable(w, name="weight_binary")
+		zz = tf.Variable(units, name="number_of_neurons")
 
 
 		# adding layer operation -> (w*x + b)
@@ -90,7 +91,10 @@ def binaryConv2d(inputs, filters, kernel_size, strides, padding="VALID", use_bia
 		if binarize_input:
 			inputs = binarize(inputs)
 		fw = binarize(fw)
-		
+
+		z = tf.Variable(fw, name="weight_binary")
+		zz = tf.Variable(filters, name="number_of_neurons")
+
 		# adding convolution
 		out = tf.nn.conv2d(inputs, fw, strides, padding, use_cudnn_on_gpu=use_cudnn_on_gpu, 
 							data_format=data_format, dilations=dilations)
@@ -144,8 +148,8 @@ def shift_batch_norm(x, training=True, momentum=0.99, epsilon=1e-8, reuse=False,
 		gamma = tf.get_variable('gamma', xshape, initializer=tf.ones_initializer, trainable=True)
 		beta  = tf.get_variable('beta', xshape, initializer=tf.zeros_initializer, trainable=True)
 		
-		mov_avg = tf.get_variable('mov_avg', xshape, initializer=tf.zeros_initializer, trainable=False)
-		mov_var = tf.get_variable('mov_std', xshape, initializer=tf.ones_initializer, trainable=False)
+		mov_avg = tf.get_variable('moving_mean', xshape, initializer=tf.zeros_initializer, trainable=False)
+		mov_var = tf.get_variable('moving_variance', xshape, initializer=tf.ones_initializer, trainable=False)
 		
 		def training_xdot():
 			avg = tf.reduce_mean(x, axis=0)							# feature means
@@ -187,8 +191,8 @@ def spatial_shift_batch_norm(x, data_format='NHWC', training=True, momentum=0.99
 		gamma = tf.get_variable('gamma', ch_tensor_shape, initializer=tf.ones_initializer, trainable=True)
 		beta  = tf.get_variable('beta', ch_tensor_shape, initializer=tf.zeros_initializer, trainable=True)
 		
-		mov_avg = tf.get_variable('mov_avg', ch_tensor_shape, initializer=tf.zeros_initializer, trainable=False)
-		mov_var = tf.get_variable('mov_std', ch_tensor_shape, initializer=tf.ones_initializer, trainable=False)
+		mov_avg = tf.get_variable('moving_mean', ch_tensor_shape, initializer=tf.zeros_initializer, trainable=False)
+		mov_var = tf.get_variable('moving_variance', ch_tensor_shape, initializer=tf.ones_initializer, trainable=False)
 		
 		def training_xdot():
 			avg = tf.reduce_mean(x, axis=mean_axis, keepdims=True)
